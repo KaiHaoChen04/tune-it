@@ -1,19 +1,23 @@
 use eframe::egui::CentralPanel;
 use eframe::NativeOptions;
 
+use crate::style::set_style;
+
+mod style;
+
 #[derive(Default)]
 struct MyApp {}
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
+        set_style(ctx);
         CentralPanel::default().show(ctx, |ui| {
             ui.heading("Tune It");
         });
-    }
+   }
 }
 
 fn main() -> eframe::Result<()> {
-    println!("Hello, world!");
 
     let options = NativeOptions {
         viewport: eframe::egui::ViewportBuilder::default()
