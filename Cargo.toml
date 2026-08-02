@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 eframe = { version = "0.31.1", features = ["default"] }
+cpal = { version = "*", features = ["asio"] }
+crossbeam-channel = "0.5"
