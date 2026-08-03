@@ -1,6 +1,8 @@
 use eframe::egui::{self, CentralPanel, TopBottomPanel};
 use eframe::NativeOptions;
 
+mod audio;
+mod algo;
 
 #[derive(Default)]
 struct MyApp {}
