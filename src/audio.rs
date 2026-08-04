@@ -3,10 +3,11 @@ use crossbeam_channel::{bounded, Sender};
 use std::time::Duration;
 
 fn start_audio_capture(tx: Sender<Vec<f32>>) -> cpal::Stream {
-    let host = cpal::default_host();
-    let device = host.default_input_device().expect("Must have a valid device");
-    let config = device.default_input_config().unwrap();
+    let host = cpal::default_host(); // current host of compilation platform
+    let device = host.default_input_device().expect("Must have a valid device"); // input device driver
+    let config = device.default_input_config().unwrap(); // device config
 
+    //build a pipeline that sends the wave to rx, wait max 5 seconds before panicing
     let stream = device.build_input_stream(
         config.config(), 
         move |data: &[f32], _| {
@@ -17,6 +18,7 @@ fn start_audio_capture(tx: Sender<Vec<f32>>) -> cpal::Stream {
         Some(Duration::from_secs(5)) 
     ).unwrap();
 
+    //start receiving
     stream.play().unwrap();
     stream
 
