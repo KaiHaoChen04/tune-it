@@ -1,8 +1,8 @@
 use cpal::{traits::{DeviceTrait, HostTrait, StreamTrait}};
-use crossbeam_channel::{bounded, Sender};
+use crossbeam_channel::{Sender};
 use std::time::Duration;
 
-fn start_audio_capture(tx: Sender<Vec<f32>>) -> cpal::Stream {
+pub fn start_audio_capture(tx: Sender<Vec<f32>>) -> cpal::Stream {
     let host = cpal::default_host(); // current host of compilation platform
     let device = host.default_input_device().expect("Must have a valid device"); // input device driver
     let config = device.default_input_config().unwrap(); // device config
@@ -13,7 +13,7 @@ fn start_audio_capture(tx: Sender<Vec<f32>>) -> cpal::Stream {
         move |data: &[f32], _| {
             let _ = tx.try_send(data.to_vec());
         },
-        |err| eprintln!("Audio failed (send failed)")
+        |_err| eprintln!("Audio failed (send failed)")
         , 
         Some(Duration::from_secs(5)) 
     ).unwrap();
