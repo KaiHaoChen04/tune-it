@@ -1,4 +1,4 @@
-fn yin_pitch(samples: &[f32], sample_rate: f32) -> Option<f32>{
+pub fn yin_pitch(samples: &[f32], sample_rate: f32) -> Option<f32>{
     let n = samples.len() / 2;
     let mut diff = vec![0.0f32; n];
 
@@ -24,7 +24,7 @@ fn yin_pitch(samples: &[f32], sample_rate: f32) -> Option<f32>{
     let mut tau_estimate = None;
     for tau in 2..n {
         if cmnd[tau] < threshold { //the first local min/max that we find
-            tau_estimate = Some(cmnd[tau]);
+            tau_estimate = Some(tau as f32);
             break;
         }
     }
