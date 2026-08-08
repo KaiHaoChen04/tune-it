@@ -57,8 +57,8 @@ impl eframe::App for MyApp {
             ui.heading("Tune It");
             ui.label(format!("Input level: {:.3}", self.input_level));
             ui.add(egui::ProgressBar::new(self.input_level.min(1.0)).show_percentage());
-            if let Some((note, cents)) = &self.current_note {
-                ui.label(format!("{note} ({cents:+.1} cents)"));
+            if let Some((note, freq)) = &self.current_note {
+                ui.label(format!("{note} ({freq:+.1} freq)"));
             } else {
                 ui.label("Listening for a stable single note...");
             }
@@ -121,10 +121,9 @@ fn freq_to_note(freq: f32) -> (String, f32){
     let a4 = 440.0;
     let semitones_from_a4 = 12.0 * (freq / a4).log2();
     let rounded = semitones_from_a4.round();
-    let cents_off = (semitones_from_a4 - rounded) * 100.0;
 
     let note_index = ((rounded as i32 + 9).rem_euclid(12)) as usize;
     let octave = 4 + ((rounded as i32 + 9) as f32 / 12.0).floor() as i32;
 
-    (format!("{}{}", NOTE_NAMES[note_index], octave), cents_off)
+    (format!("{}{}", NOTE_NAMES[note_index], octave), freq)
 }
