@@ -1,13 +1,33 @@
-use crossbeam_channel::{Receiver};
+use crossbeam_channel::Receiver;
+use eframe::egui::{self, pos2, CentralPanel, Color32, Painter, Pos2, Stroke, TopBottomPanel};
 use eframe::NativeOptions;
-use eframe::egui::{self, CentralPanel, TopBottomPanel};
 
 mod algo;
 mod audio;
 
 use crate::algo::yin_pitch;
 use crate::audio::start_audio_capture;
-const NOTE_NAMES:[&str; 12] = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const NOTE_NAMES: [&str; 12] = [
+    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+];
+const STRINGS: [MajorNotes; 6] = [
+    MajorNotes::E,
+    MajorNotes::A,
+    MajorNotes::D,
+    MajorNotes::G,
+    MajorNotes::B,
+    MajorNotes::SmallE,
+];
+
+#[derive(Debug)]
+enum MajorNotes {
+    E,
+    A,
+    D,
+    G,
+    B,
+    SmallE,
+}
 
 struct MyApp {
     rx: Receiver<Vec<f32>>,
@@ -57,6 +77,14 @@ impl eframe::App for MyApp {
             ui.heading("Tune It");
             ui.label(format!("Input level: {:.3}", self.input_level));
             ui.add(egui::ProgressBar::new(self.input_level.min(1.0)).show_percentage());
+
+            let mut x = 200.0;
+            for (i, val) in STRINGS.iter().enumerate() {
+                ui.label(format!("{:?}", val));
+                draw_strings(ui.painter(), x, 220.0, Color32::WHITE);
+                x += 40.0;
+            }
+
             if let Some((note, freq)) = &self.current_note {
                 ui.label(format!("{note} ({freq:+.1} freq)"));
             } else {
@@ -79,7 +107,13 @@ fn show_top_bar(ctx: &egui::Context) {
         });
     });
 }
+fn draw_strings(painter: &Painter, x: f32, y: f32, color: Color32) {
+    let p1 = pos2(x, y + 180.0);
+    let p2: Pos2 = pos2(x, y - 20.0);
+    let stroke = Stroke::new(2.0, color);
 
+    Painter::line_segment(&painter, [p1, p2], stroke);
+}
 fn main() -> eframe::Result<()> {
     let options = NativeOptions {
         viewport: eframe::egui::ViewportBuilder::default()
@@ -117,7 +151,7 @@ fn set_style(ctx: &eframe::egui::Context) {
     .into();
     ctx.set_style(style);
 }
-fn freq_to_note(freq: f32) -> (String, f32){
+fn freq_to_note(freq: f32) -> (String, f32) {
     let a4 = 440.0;
     let semitones_from_a4 = 12.0 * (freq / a4).log2();
     let rounded = semitones_from_a4.round();
