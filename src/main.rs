@@ -28,7 +28,18 @@ enum MajorNotes {
     B,
     SmallE,
 }
-
+impl MajorNotes {
+    fn to_name(&self) -> &'static str {
+        match self {
+            MajorNotes::E => "E",
+            MajorNotes::A => "A",
+            MajorNotes::D => "D",
+            MajorNotes::G => "G",
+            MajorNotes::B => "B",
+            MajorNotes::SmallE => "e",
+        }
+    }
+}
 struct MyApp {
     rx: Receiver<Vec<f32>>,
     _stream: cpal::Stream,
@@ -80,7 +91,13 @@ impl eframe::App for MyApp {
 
             let mut x = 200.0;
             for (i, val) in STRINGS.iter().enumerate() {
-                ui.label(format!("{:?}", val));
+                ui.painter().text(
+                    pos2(x, 190.0),
+                    egui::Align2::CENTER_BOTTOM,
+                    val.to_name(),
+                    egui::FontId::monospace(16.0),
+                    Color32::WHITE,
+                );
                 draw_strings(ui.painter(), x, 220.0, Color32::WHITE);
                 x += 40.0;
             }
