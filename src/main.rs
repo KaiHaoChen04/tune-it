@@ -96,7 +96,9 @@ impl eframe::App for MyApp {
                     egui::Align2::CENTER_BOTTOM,
                     val.to_name(),
                     egui::FontId::monospace(16.0),
-                    Color32::WHITE,
+                    self.current_note
+                        .as_ref()
+                        .map_or(Color32::WHITE, |note| change_colour(&NOTE_NAMES, note)),
                 );
                 draw_strings(ui.painter(), x, 220.0, Color32::WHITE);
                 x += 40.0;
@@ -177,4 +179,14 @@ fn freq_to_note(freq: f32) -> (String, f32) {
     let octave = 4 + ((rounded as i32 + 9) as f32 / 12.0).floor() as i32;
 
     (format!("{}{}", NOTE_NAMES[note_index], octave), freq)
+}
+fn change_colour(note_name: &[&str], note_freq: &(String, f32)) -> Color32 {
+    if note_name
+        .iter()
+        .any(|curr_note| *curr_note == note_freq.0.split_off(1))
+    {
+        Color32::BLUE
+    } else {
+        Color32::WHITE
+    }
 }
