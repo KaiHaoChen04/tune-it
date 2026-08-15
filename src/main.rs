@@ -198,3 +198,20 @@ fn change_colour(string_note: &MajorNotes, detected: &(String, f32)) -> Color32 
         Color32::WHITE
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_c3() {
+        assert_eq!(freq_to_note(130.00), ("C3".to_string(), 130.0));
+    }
+    #[test]
+    fn test_g3() {
+        assert_eq!(freq_to_note(211.00), ("G#3".to_string(), 211.0));
+    }
+    #[test]
+    fn test_b2() {
+        assert_eq!(freq_to_note(125.00), ("B2".to_string(), 125.0));
+    }
+}
