@@ -91,16 +91,18 @@ impl eframe::App for MyApp {
 
             let mut x = 200.0;
             for (i, val) in STRINGS.iter().enumerate() {
+                let curr_colour = self
+                    .current_note
+                    .as_ref()
+                    .map_or(Color32::WHITE, |note| change_colour(val, note));
                 ui.painter().text(
                     pos2(x, 190.0),
                     egui::Align2::CENTER_BOTTOM,
                     val.to_name(),
                     egui::FontId::monospace(16.0),
-                    self.current_note
-                        .as_ref()
-                        .map_or(Color32::WHITE, |note| change_colour(&NOTE_NAMES, note)),
+                    curr_colour,
                 );
-                draw_strings(ui.painter(), x, 220.0, Color32::WHITE);
+                draw_strings(ui.painter(), x, 220.0, curr_colour);
                 x += 40.0;
             }
 
@@ -180,11 +182,17 @@ fn freq_to_note(freq: f32) -> (String, f32) {
 
     (format!("{}{}", NOTE_NAMES[note_index], octave), freq)
 }
-fn change_colour(note_name: &[&str], note_freq: &(String, f32)) -> Color32 {
-    if note_name
-        .iter()
-        .any(|curr_note| *curr_note == note_freq.0.split_off(1))
-    {
+fn change_colour(string_note: &MajorNotes, detected: &(String, f32)) -> Color32 {
+    let letter = detected
+        .0
+        .trim_end_matches(|c: char| c.is_ascii_digit() || c == '-');
+
+    let matches = match string_note {
+        MajorNotes::SmallE => letter.eq_ignore_ascii_case("E"),
+        other => letter == other.to_name(),
+    };
+
+    if matches {
         Color32::BLUE
     } else {
         Color32::WHITE
